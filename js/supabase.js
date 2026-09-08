@@ -4,9 +4,9 @@
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// ===== REPLACE WITH YOUR CREDENTIALS FROM STEP 3 =====
-const SUPABASE_URL = 'https://cfcuzjywrwxzqeolrdvb.supabase.co/rest/v1/';  
-const SUPABASE_ANON_KEY = 'sb_publishable_ewxy4ua7ei185Qv-nMbV0Q_LiMuud_s'; 
+// ===== YOUR SUPABASE CREDENTIALS =====
+const SUPABASE_URL = 'https://cfcuzjywrwxzqeolrdvb.supabase.co';  // ← Fixed: Removed /rest/v1/
+const SUPABASE_ANON_KEY = 'sb_publishable_ewxy4ua7ei185Qv-nMbV0Q_LiMuud_s';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
