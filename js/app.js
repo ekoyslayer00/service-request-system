@@ -38,14 +38,26 @@ let currentUser = null;
 
 // ===== INITIALIZATION =====
 async function init() {
-    const user = await checkSession();
-    if (!user) return;
-    
-    currentUser = user;
-    userEmailDisplay.textContent = user.email || 'User';
-    
-    await loadRequests();
-    setupEventListeners();
+    try {
+        const user = await checkSession();
+        if (!user) return;
+
+        currentUser = user;
+        userEmailDisplay.textContent = user.email || 'User';
+
+        await loadRequests();
+        setupEventListeners();
+    } catch (err) {
+        console.error('Application startup error:', err);
+        showStartupError();
+    }
+}
+
+function showStartupError() {
+    const message = document.createElement('div');
+    message.className = 'startup-error';
+    message.innerHTML = '<strong>Unable to load the dashboard.</strong><span>Please refresh the page or sign in again.</span><a href="login.html">Return to login</a>';
+    document.body.prepend(message);
 }
 
 // ===== LOAD REQUESTS =====
