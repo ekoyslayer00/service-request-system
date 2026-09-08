@@ -42,12 +42,18 @@ loginForm?.addEventListener('submit', async (e) => {
 
 // ===== CHECK SESSION =====
 export async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html';
+            return null;
+        }
+        return session.user;
+    } catch (err) {
+        console.error('Session check error:', err);
         window.location.href = 'login.html';
         return null;
     }
-    return session.user;
 }
 
 // ===== LOGOUT =====
@@ -58,8 +64,9 @@ export async function logout() {
 
 // ===== AUTO-REDIRECT: If already logged in, go to dashboard =====
 if (window.location.pathname.includes('login.html')) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        window.location.href = 'index.html';
-    }
+    supabase.auth.getSession()
+        .then(({ data: { session } }) => {
+            if (session) window.location.href = 'index.html';
+        })
+        .catch((err) => console.error('Auto-redirect session check error:', err));
 }
