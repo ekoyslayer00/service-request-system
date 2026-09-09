@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Laboratory Exercise 3: Online Service Request Management System
 
 ## Problem Statement
@@ -16,7 +15,3 @@ graph TD
     A -->|Search/Filter| C
     A -->|View Dashboard| D[Dashboard]
     C -->|Update Status| E[Status Management]
-=======
-# service-request-system
-Online Service Request Management System - Laboratory Exercise 3
->>>>>>> bc7d8820de9b10ec3217bcff006435cb617c9b65
