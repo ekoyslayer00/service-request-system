@@ -10,7 +10,7 @@
 <body>
     <div id="app" style="display:none;">
         <header class="app-header">
-            <h1>📋 My Requests</h1>
+            <h1>📦 Laboratory Asset Management</h1>
             <div class="header-right">
                 <span id="userInfo"></span>
                 <span id="roleBadge" class="badge"></span>
@@ -20,7 +20,13 @@
         <nav id="mainNav" class="main-nav"></nav>
 
         <main class="dashboard">
-            <h1>📋 My Borrowing Requests</h1>
+            <div class="page-header">
+                <h1>📋 My Borrowing Requests</h1>
+                <button id="newRequestBtn" class="btn btn-success">
+                    <i class="fas fa-plus"></i> New Request
+                </button>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -39,6 +45,29 @@
     </div>
 
     <div id="loading" class="loading-spinner"><h2>Loading...</h2></div>
+
+    <!-- NEW REQUEST MODAL -->
+    <div id="requestModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" id="closeRequestModal">&times;</span>
+            <h2>➕ New Borrowing Request</h2>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label>Equipment *</label>
+                    <select id="reqEquipment" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Expected Return Date *</label>
+                    <input type="date" id="reqReturnDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Purpose</label>
+                    <textarea id="reqPurpose" rows="2" placeholder="Reason for borrowing..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </form>
+        </div>
+    </div>
 
     <script type="module" src="js/my-requests.js"></script>
 </body>
