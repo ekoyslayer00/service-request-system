@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Lab Asset Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="app" style="display:none;">
+        <header class="app-header">
+            <h1>📦 Laboratory Asset Management</h1>
+            <div class="header-right">
+                <span id="userInfo"></span>
+                <span id="roleBadge" class="badge"></span>
+                <button id="logoutBtn" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+        <nav id="mainNav" class="main-nav"></nav>
+
+        <main class="dashboard">
+            <h1>📈 Reports & Analytics</h1>
+
+            <!-- Summary Cards -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Total Equipment</span>
+                    <span id="rptTotal" class="metric-value">0</span>
+                </div>
+                <div class="metric-card pending">
+                    <span class="metric-label">Available</span>
+                    <span id="rptAvailable" class="metric-value">0</span>
+                </div>
+                <div class="metric-card in-progress">
+                    <span class="metric-label">Borrowed</span>
+                    <span id="rptBorrowed" class="metric-value">0</span>
+                </div>
+                <div class="metric-card completed">
+                    <span class="metric-label">Maintenance</span>
+                    <span id="rptMaintenance" class="metric-value">0</span>
+                </div>
+            </section>
+
+            <!-- Borrowing Statistics -->
+            <h2 style="margin-top:2rem;">Borrowing Statistics</h2>
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Total Requests</span>
+                    <span id="rptTotalReq" class="metric-value">0</span>
+                </div>
+                <div class="metric-card pending">
+                    <span class="metric-label">Pending</span>
+                    <span id="rptPending" class="metric-value">0</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Approved</span>
+                    <span id="rptApproved" class="metric-value">0</span>
+                </div>
+                <div class="metric-card completed">
+                    <span class="metric-label">Completed</span>
+                    <span id="rptCompleted" class="metric-value">0</span>
+                </div>
+            </section>
+
+            <!-- Equipment by Status Table -->
+            <h2 style="margin-top:2rem;">Equipment by Status</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Count</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipmentStatusBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Recent Activity -->
+            <h2 style="margin-top:2rem;">Recent Activity (Last 10)</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Module</th>
+                            <th>Description</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentActivityBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="loading" class="loading-spinner"><h2>Loading...</h2></div>
+
+    <script type="module" src="js/reports.js"></script>
+</body>
+</html>
