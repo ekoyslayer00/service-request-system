@@ -72,23 +72,45 @@ function renderTable() {
 
     const canManage = can(currentUser.role, 'manageEquipment');
     const canDelete = currentUser.role === 'admin';
+    const isRequester = currentUser.role === 'requester';
 
-    body.innerHTML = allEquipment.map(e => `
-        <tr>
-            <td>#${e.id}</td>
-            <td><strong>${e.asset_tag}</strong></td>
-            <td>${e.name}</td>
-            <td>${e.category || '—'}</td>
-            <td><span class="badge eq-${e.status.toLowerCase()}">${e.status}</span></td>
-            <td>
-                <div class="action-group">
-                    ${canManage ? `<button class="btn btn-info btn-sm" onclick="editEq(${e.id})">✏️ Edit</button>` : ''}
-                    ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEq(${e.id})">🗑️ Delete</button>` : ''}
-                    ${!canManage ? '<span style="color:#999;font-size:0.8rem;">👁️ View only</span>' : ''}
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    body.innerHTML = allEquipment.map(e => {
+        let actions = '';
+
+        // Admin/Staff: Edit/Delete
+        if (canManage) {
+            actions += `<button class="btn btn-info btn-sm" onclick="editEq(${e.id})">✏️ Edit</button> `;
+        }
+        if (canDelete) {
+            actions += `<button class="btn btn-danger btn-sm" onclick="deleteEq(${e.id})">🗑️ Delete</button>`;
+        }
+
+        // Requester: "Request" button for available equipment
+        if (isRequester && e.status === 'Available') {
+            actions += `<a href="my-requests.html" class="btn btn-success btn-sm">📤 Request</a>`;
+        }
+
+        // Requester view-only label
+        if (isRequester && e.status !== 'Available') {
+            actions += `<span style="color:#999;font-size:0.8rem;">👁️ View only</span>`;
+        }
+
+        // Fallback
+        if (!actions) {
+            actions = '<span style="color:#999;font-size:0.8rem;">👁️ View only</span>';
+        }
+
+        return `
+            <tr>
+                <td>#${e.id}</td>
+                <td><strong>${e.asset_tag}</strong></td>
+                <td>${e.name}</td>
+                <td>${e.category || '—'}</td>
+                <td><span class="badge eq-${e.status.toLowerCase()}">${e.status}</span></td>
+                <td><div class="action-group">${actions}</div></td>
+            </tr>
+        `;
+    }).join('');
 }
 
 window.editEq = (id) => {
