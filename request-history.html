@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request History - Lab Asset Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="app" style="display:none;">
+        <header class="app-header">
+            <h1>📦 Laboratory Asset Management</h1>
+            <div class="header-right">
+                <span id="userInfo"></span>
+                <span id="roleBadge" class="badge"></span>
+                <button id="logoutBtn" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+        <nav id="mainNav" class="main-nav"></nav>
+
+        <main class="dashboard">
+            <h1>📜 My Request History</h1>
+            <p style="color:#666;margin-bottom:1rem;">
+                Your completed, rejected, and returned requests.
+            </p>
+
+            <div class="filter-group" style="margin-bottom:1rem;">
+                <select id="historyFilter">
+                    <option value="">All History</option>
+                    <option value="Returned">Returned</option>
+                    <option value="Closed">Closed</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Equipment</th>
+                            <th>Requested</th>
+                            <th>Returned</th>
+                            <th>Final Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="loading" class="loading-spinner"><h2>Loading...</h2></div>
+
+    <script type="module" src="js/request-history.js"></script>
+</body>
+</html>
