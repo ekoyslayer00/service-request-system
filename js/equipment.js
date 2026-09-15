@@ -22,7 +22,11 @@ async function init() {
     if (addBtn && !['admin', 'staff'].includes(currentUser.role)) {
         addBtn.style.display = 'none';
     }
-
+// ⚠️ HIDE "Add Equipment" button for non-admin/staff
+const addBtn = document.getElementById('addEquipmentBtn');
+if (addBtn && !['admin', 'staff'].includes(currentUser.role)) {
+    addBtn.style.display = 'none';
+}
     renderNav();
     await loadEquipment();
     setupEvents();
