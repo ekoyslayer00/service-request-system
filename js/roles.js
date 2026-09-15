@@ -1,7 +1,3 @@
-// ============================================================
-// roles.js - Role-Based Permissions & Navigation
-// ============================================================
-
 export const ROLES = {
     ADMIN: 'admin',
     STAFF: 'staff',
@@ -10,28 +6,46 @@ export const ROLES = {
 
 export const PERMISSIONS = {
     admin: {
-        manageUsers: true, manageEquipment: true,
-        approveBorrowing: true, rejectBorrowing: true,
-        releaseEquipment: true, processReturn: true,
-        manageMaintenance: true, viewReports: true,
-        viewAuditLogs: true, createBorrowing: true,
-        viewOwnRequests: true
+        manageUsers: true,
+        manageEquipment: true,
+        approveBorrowing: true,
+        rejectBorrowing: true,
+        releaseEquipment: true,
+        processReturn: true,
+        manageMaintenance: true,
+        viewReports: true,
+        viewAuditLogs: true,
+        createBorrowing: true,
+        viewOwnRequests: true,
+        viewRequestHistory: true
     },
     staff: {
-        manageUsers: false, manageEquipment: true,
-        approveBorrowing: false, rejectBorrowing: false,
-        releaseEquipment: true, processReturn: true,
-        manageMaintenance: true, viewReports: false,
-        viewAuditLogs: false, createBorrowing: true,
-        viewOwnRequests: true
+        manageUsers: false,
+        manageEquipment: true,
+        approveBorrowing: false,
+        rejectBorrowing: false,
+        releaseEquipment: true,
+        processReturn: true,
+        manageMaintenance: true,
+        viewReports: false,
+        viewAuditLogs: false,
+        createBorrowing: true,
+        viewOwnRequests: true,
+        viewRequestHistory: false
     },
     requester: {
-        manageUsers: false, manageEquipment: false,
-        approveBorrowing: false, rejectBorrowing: false,
-        releaseEquipment: false, processReturn: false,
-        manageMaintenance: false, viewReports: false,
-        viewAuditLogs: false, createBorrowing: true,
-        viewOwnRequests: true
+        manageUsers: false,
+        manageEquipment: false,
+        approveBorrowing: false,
+        rejectBorrowing: false,
+        releaseEquipment: false,
+        processReturn: false,
+        manageMaintenance: false,
+        viewReports: false,
+        viewAuditLogs: false,
+        createBorrowing: true,
+        viewOwnRequests: true,
+        viewRequestHistory: true
     }
 };
 
@@ -41,31 +55,38 @@ export function can(role, permission) {
 
 export function requirePermission(role, permission) {
     if (!can(role, permission)) {
-        alert('❌ Access Denied');
+        alert('❌ Access Denied: You do not have permission for this action.');
         window.location.href = 'index.html';
         return false;
     }
     return true;
 }
 
+// ============================================================
+// NAVIGATION — Exact match sa Lab 4 instructions
+// ============================================================
+
 export const NAVIGATION = {
     admin: [
         { label: 'Dashboard', icon: '📊', href: 'index.html' },
         { label: 'Users', icon: '👥', href: 'users.html' },
         { label: 'Equipment', icon: '📦', href: 'equipment.html' },
-        { label: 'Borrowing', icon: '📋', href: 'borrowing.html' },
+        { label: 'Borrowing Requests', icon: '📋', href: 'borrowing.html' },
         { label: 'Maintenance', icon: '🔧', href: 'maintenance.html' },
+        { label: 'Reports', icon: '📈', href: 'reports.html' },
         { label: 'Audit Logs', icon: '📜', href: 'audit-logs.html' }
     ],
     staff: [
         { label: 'Dashboard', icon: '📊', href: 'index.html' },
         { label: 'Equipment', icon: '📦', href: 'equipment.html' },
         { label: 'Borrowing', icon: '📋', href: 'borrowing.html' },
+        { label: 'Returns', icon: '↩️', href: 'returns.html' },
         { label: 'Maintenance', icon: '🔧', href: 'maintenance.html' }
     ],
     requester: [
         { label: 'Dashboard', icon: '📊', href: 'index.html' },
         { label: 'Available Equipment', icon: '📦', href: 'equipment.html' },
-        { label: 'My Requests', icon: '📋', href: 'my-requests.html' }
+        { label: 'My Requests', icon: '📋', href: 'my-requests.html' },
+        { label: 'Request History', icon: '📜', href: 'request-history.html' }
     ]
 };
