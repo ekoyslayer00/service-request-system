@@ -541,3 +541,181 @@ body {
         padding: 1.5rem;
     }
 }
+/* ===== ROLE BADGES ===== */
+.badge.role-admin {
+    background: #dc3545;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.badge.role-staff {
+    background: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.badge.role-requester {
+    background: #28a745;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ===== MAIN NAVIGATION ===== */
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background: #f0f4ff;
+    color: #667eea;
+}
+
+.nav-link.active {
+    background: #667eea;
+    color: white;
+}
+
+.nav-logout {
+    margin-left: auto;
+    color: #e74c3c !important;
+}
+
+.nav-logout:hover {
+    background: #ffe5e5;
+}
+
+/* ===== DASHBOARD MAIN ===== */
+.dashboard {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.dashboard h2 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+}
+
+/* ===== BUTTON VARIANTS ===== */
+.btn-warning {
+    background: #f39c12;
+    color: white;
+}
+.btn-warning:hover { background: #e67e22; }
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+.btn-danger:hover { background: #c0392b; }
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+.btn-info:hover { background: #138496; }
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+/* ===== BADGES FOR BORROWING STATUS ===== */
+.badge.status-pending    { background: #fff3cd; color: #856404; }
+.badge.status-approved   { background: #d4edda; color: #155724; }
+.badge.status-rejected   { background: #f8d7da; color: #721c24; }
+.badge.status-released   { background: #cce5ff; color: #004085; }
+.badge.status-returned   { background: #d1ecf1; color: #0c5460; }
+.badge.status-overdue    { background: #f5c6cb; color: #721c24; }
+.badge.status-closed     { background: #e2e3e5; color: #383d41; }
+
+/* ===== EQUIPMENT STATUS BADGES ===== */
+.badge.eq-available   { background: #d4edda; color: #155724; }
+.badge.eq-borrowed    { background: #cce5ff; color: #004085; }
+.badge.eq-maintenance { background: #fff3cd; color: #856404; }
+.badge.eq-damaged     { background: #f8d7da; color: #721c24; }
+.badge.eq-retired     { background: #e2e3e5; color: #383d41; }
+
+/* ===== ACTION BUTTONS IN TABLE ===== */
+.action-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.action-group .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+/* ===== ROLE INFO CARD ===== */
+.role-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #667eea;
+}
+
+/* ===== LOADING ===== */
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+
+/* ===== RESPONSIVE NAV ===== */
+@media (max-width: 768px) {
+    .main-nav {
+        flex-direction: column;
+    }
+    .nav-link {
+        width: 100%;
+    }
+    .nav-logout {
+        margin-left: 0;
+    }
+}
