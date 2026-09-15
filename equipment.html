@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment - Lab Asset Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="app" style="display:none;">
+        <header class="app-header">
+            <h1>📦 Laboratory Asset Management</h1>
+            <div class="header-right">
+                <span id="userInfo"></span>
+                <span id="roleBadge" class="badge"></span>
+                <button id="logoutBtn" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+        <nav id="mainNav" class="main-nav"></nav>
 
+        <main class="dashboard">
+            <div class="page-header">
+                <h1>📦 Equipment</h1>
+                <button id="addEquipmentBtn" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add Equipment
+                </button>
+            </div>
+            <div class="table-wrapper">
+                <table id="equipmentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Asset Tag</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipmentBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="loading" class="loading-spinner"><h2>Loading...</h2></div>
+
+    <!-- Modal -->
+    <div id="equipmentModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Add Equipment</h2>
+            <form id="equipmentForm">
+                <input type="hidden" id="equipmentId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Asset Tag *</label>
+                        <input type="text" id="eqAssetTag" required placeholder="LAP-001">
+                    </div>
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="eqName" required placeholder="Dell Laptop">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="eqCategory" placeholder="Laptop">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="eqStatus">
+                            <option value="Available">Available</option>
+                            <option value="Borrowed">Borrowed</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Damaged">Damaged</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="eqDescription" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/equipment.js"></script>
+</body>
+</html>
