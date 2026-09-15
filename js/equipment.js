@@ -66,9 +66,9 @@ function renderTable() {
             <td><span class="badge eq-${e.status.toLowerCase()}">${e.status}</span></td>
             <td>
                 <div class="action-group">
-                    ${canManage ? `<button class="btn btn-info btn-sm" onclick="editEq(${e.id})">✏️ Edit</button>` : ''}
-                    ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEq(${e.id})">🗑️ Delete</button>` : ''}
-                    ${!canManage ? '<span style="color:#999;font-size:0.8rem;">View only</span>' : ''}
+                   ${canManage ? `<button class="btn btn-info btn-sm" onclick="editEq(${e.id})">✏️ Edit</button>` : ''}
+                   ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEq(${e.id})">🗑️ Delete</button>` : ''}
+                   ${!canManage ? '<span style="color:#999;font-size:0.8rem;">👁️ View only</span>' : ''}
                 </div>
             </td>
         </tr>
