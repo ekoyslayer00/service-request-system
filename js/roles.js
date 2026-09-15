@@ -1,3 +1,7 @@
+// ============================================================
+// roles.js - Role-Based Permissions & Navigation
+// ============================================================
+
 export const ROLES = {
     ADMIN: 'admin',
     STAFF: 'staff',
@@ -6,42 +10,27 @@ export const ROLES = {
 
 export const PERMISSIONS = {
     admin: {
-        manageUsers: true,
-        manageEquipment: true,
-        approveBorrowing: true,
-        rejectBorrowing: true,
-        releaseEquipment: true,
-        processReturn: true,
-        manageMaintenance: true,
-        viewReports: true,
-        viewAuditLogs: true,
-        createBorrowing: true,
+        manageUsers: true, manageEquipment: true,
+        approveBorrowing: true, rejectBorrowing: true,
+        releaseEquipment: true, processReturn: true,
+        manageMaintenance: true, viewReports: true,
+        viewAuditLogs: true, createBorrowing: true,
         viewOwnRequests: true
     },
     staff: {
-        manageUsers: false,
-        manageEquipment: true,
-        approveBorrowing: false,
-        rejectBorrowing: false,
-        releaseEquipment: true,
-        processReturn: true,
-        manageMaintenance: true,
-        viewReports: false,
-        viewAuditLogs: false,
-        createBorrowing: true,
+        manageUsers: false, manageEquipment: true,
+        approveBorrowing: false, rejectBorrowing: false,
+        releaseEquipment: true, processReturn: true,
+        manageMaintenance: true, viewReports: false,
+        viewAuditLogs: false, createBorrowing: true,
         viewOwnRequests: true
     },
     requester: {
-        manageUsers: false,
-        manageEquipment: false,
-        approveBorrowing: false,
-        rejectBorrowing: false,
-        releaseEquipment: false,
-        processReturn: false,
-        manageMaintenance: false,
-        viewReports: false,
-        viewAuditLogs: false,
-        createBorrowing: true,
+        manageUsers: false, manageEquipment: false,
+        approveBorrowing: false, rejectBorrowing: false,
+        releaseEquipment: false, processReturn: false,
+        manageMaintenance: false, viewReports: false,
+        viewAuditLogs: false, createBorrowing: true,
         viewOwnRequests: true
     }
 };
@@ -52,7 +41,7 @@ export function can(role, permission) {
 
 export function requirePermission(role, permission) {
     if (!can(role, permission)) {
-        alert('❌ Access Denied: You do not have permission for this action.');
+        alert('❌ Access Denied');
         window.location.href = 'index.html';
         return false;
     }
