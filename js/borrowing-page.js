@@ -1,171 +1,188 @@
 import { supabase } from './supabase.js';
-import { checkSession, getCurrentUserWithRole, logout, logAudit } from './auth.js';
-import { NAVIGATION, can } from './roles.js';
-import { createBorrowingRequest, approveRequest, rejectRequest, releaseEquipment, processReturn } from './borrowing.js';
+import { logAudit } from './auth.js';
 
-let currentUser = null;
-let allTx = [];
-let availableEquipment = [];
+// ===== CREATE BORROWING REQUEST =====
+export async function createBorrowingRequest(equipmentId, expectedReturnDate, purpose) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Not authenticated');
 
-async function init() {
-    const session = await checkSession();
-    if (!session) return;
-    currentUser = await getCurrentUserWithRole();
-    if (!currentUser) return;
+    // Check if equipment is available
+    const { data: equipment } = await supabase
+        .from('equipment')
+        .select('status')
+        .eq('id', equipmentId)
+        .single();
 
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('userInfo').textContent = currentUser.email;
-    const rb = document.getElementById('roleBadge');
-    rb.textContent = currentUser.role.toUpperCase();
-    rb.className = `badge role-${currentUser.role}`;
-
-    renderNav();
-    await loadEquipmentOptions();
-    await loadTransactions();
-    setupEvents();
-}
-
-function renderNav() {
-    const nav = document.getElementById('mainNav');
-    const links = NAVIGATION[currentUser.role] || [];
-    nav.innerHTML = links.map(l =>
-        `<a href="${l.href}" class="nav-link ${l.href === 'borrowing.html' ? 'active' : ''}">${l.icon} ${l.label}</a>`
-    ).join('') + `<a href="#" id="navLogout" class="nav-link nav-logout">🚪 Logout</a>`;
-    document.getElementById('navLogout').onclick = (e) => { e.preventDefault(); logout(); };
-}
-
-async function loadEquipmentOptions() {
-    const { data } = await supabase.from('equipment').select('id, asset_tag, name, status').eq('status', 'Available');
-    availableEquipment = data || [];
-    const sel = document.getElementById('reqEquipment');
-    sel.innerHTML = availableEquipment.length
-        ? availableEquipment.map(e => `<option value="${e.id}">${e.asset_tag} - ${e.name}</option>`).join('')
-        : '<option value="">No equipment available</option>';
-}
-
-async function loadTransactions() {
-    let query = supabase.from('borrowing_transactions').select(`
-        *,
-        equipment:equipment_id (asset_tag, name),
-        requester:requester_id (email)
-    `).order('id', { ascending: false });
-
-    // Requester only sees their own
-    if (currentUser.role === 'requester') {
-        query = query.eq('requester_id', currentUser.id);
+    if (!equipment) throw new Error('Equipment not found');
+    if (equipment.status !== 'Available') {
+        throw new Error('BR-A4-01: Equipment is not available');
     }
 
-    const { data, error } = await query;
-    if (error) { console.error(error); return; }
-    allTx = data || [];
-    renderTable();
+    const { data, error } = await supabase
+        .from('borrowing_transactions')
+        .insert([{
+            requester_id: session.user.id,
+            equipment_id: equipmentId,
+            expected_return_date: expectedReturnDate,
+            purpose: purpose,
+            status: 'Pending'
+        }])
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    await logAudit('REQUESTED', 'Borrowing', data.id,
+        `Requested equipment #${equipmentId}`);
+
+    return data;
 }
 
-function renderTable() {
-    const body = document.getElementById('borrowBody');
-    const filter = document.getElementById('statusFilter').value;
-    const filtered = filter ? allTx.filter(t => t.status === filter) : allTx;
-
-    if (filtered.length === 0) {
-        body.innerHTML = `<tr><td colspan="6" class="empty-row">No requests found</td></tr>`;
-        return;
+// ===== APPROVE REQUEST =====
+export async function approveRequest(transactionId, userRole, userId, requesterId) {
+    // BR-A4-03: Only Admin can approve
+    if (userRole !== 'admin') {
+        throw new Error('BR-A4-03: Only Administrator can approve');
     }
 
-    const isAdmin = currentUser.role === 'admin';
-    const isStaff = currentUser.role === 'staff';
+    // BR-A4-02: Cannot approve own request
+    if (userId === requesterId) {
+        throw new Error('BR-A4-02: Cannot approve your own request');
+    }
 
-    body.innerHTML = filtered.map(t => {
-        let actions = '';
+    const { data, error } = await supabase
+        .from('borrowing_transactions')
+        .update({
+            status: 'Approved',
+            approved_by: userId,
+            approved_at: new Date().toISOString()
+        })
+        .eq('id', transactionId)
+        .select()
+        .single();
 
-        if (isAdmin && t.status === 'Pending') {
-            actions += `<button class="btn btn-success btn-sm" onclick="doApprove(${t.id})">✅ Approve</button>`;
-            actions += `<button class="btn btn-danger btn-sm" onclick="doReject(${t.id})">❌ Reject</button>`;
-        }
-        if ((isAdmin || isStaff) && t.status === 'Approved') {
-            actions += `<button class="btn btn-info btn-sm" onclick="doRelease(${t.id})">📤 Release</button>`;
-        }
-        if ((isAdmin || isStaff) && (t.status === 'Released' || t.status === 'Overdue')) {
-            actions += `<button class="btn btn-warning btn-sm" onclick="doReturn(${t.id}, false)">📥 Return</button>`;
-            actions += `<button class="btn btn-danger btn-sm" onclick="doReturn(${t.id}, true)">⚠️ Return Damaged</button>`;
-        }
-        if (!actions) actions = '<span style="color:#999;font-size:0.8rem;">—</span>';
+    if (error) throw error;
 
-        return `
-            <tr>
-                <td>#${t.id}</td>
-                <td>${t.requester?.email || '—'}</td>
-                <td>${t.equipment?.asset_tag || '—'} - ${t.equipment?.name || ''}</td>
-                <td>${t.expected_return_date || '—'}</td>
-                <td><span class="badge status-${t.status.toLowerCase()}">${t.status}</span></td>
-                <td><div class="action-group">${actions}</div></td>
-            </tr>
-        `;
-    }).join('');
+    await logAudit('APPROVED', 'Borrowing', transactionId,
+        `Approved borrowing request #${transactionId}`);
+
+    return data;
 }
 
-window.doApprove = async (id) => {
-    const tx = allTx.find(t => t.id === id);
-    try {
-        await approveRequest(id, currentUser.role, currentUser.id, tx.requester_id);
-        alert('✅ Approved!');
-        await loadTransactions();
-    } catch (err) { alert('❌ ' + err.message); }
-};
+// ===== REJECT REQUEST =====
+export async function rejectRequest(transactionId, userRole, userId, reason) {
+    if (userRole !== 'admin') {
+        throw new Error('BR-A4-03: Only Administrator can reject');
+    }
 
-window.doReject = async (id) => {
-    const reason = prompt('Rejection reason:');
-    if (!reason) return;
-    try {
-        await rejectRequest(id, currentUser.role, currentUser.id, reason);
-        alert('✅ Rejected');
-        await loadTransactions();
-    } catch (err) { alert('❌ ' + err.message); }
-};
+    const { data, error } = await supabase
+        .from('borrowing_transactions')
+        .update({
+            status: 'Rejected',
+            approved_by: userId,
+            approved_at: new Date().toISOString(),
+            rejection_reason: reason
+        })
+        .eq('id', transactionId)
+        .select()
+        .single();
 
-window.doRelease = async (id) => {
-    try {
-        await releaseEquipment(id, currentUser.role, currentUser.id);
-        alert('✅ Released!');
-        await loadTransactions();
-    } catch (err) { alert('❌ ' + err.message); }
-};
+    if (error) throw error;
 
-window.doReturn = async (id, isDamaged) => {
-    try {
-        await processReturn(id, currentUser.id, isDamaged);
-        alert('✅ Returned!');
-        await loadTransactions();
-    } catch (err) { alert('❌ ' + err.message); }
-};
+    await logAudit('REJECTED', 'Borrowing', transactionId,
+        `Rejected: ${reason}`);
 
-function setupEvents() {
-    document.getElementById('logoutBtn').onclick = logout;
-    document.getElementById('statusFilter').onchange = renderTable;
-
-    document.getElementById('closeRequestModal').onclick = () =>
-        document.getElementById('requestModal').style.display = 'none';
-
-    document.getElementById('newRequestBtn').onclick = () => {
-        document.getElementById('requestForm').reset();
-        document.getElementById('requestModal').style.display = 'flex';
-    };
-
-    document.getElementById('requestForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const equipmentId = document.getElementById('reqEquipment').value;
-        const returnDate = document.getElementById('reqReturnDate').value;
-        const purpose = document.getElementById('reqPurpose').value;
-
-        if (!equipmentId) { alert('No equipment selected'); return; }
-
-        try {
-            await createBorrowingRequest(equipmentId, returnDate, purpose);
-            alert('✅ Request submitted!');
-            document.getElementById('requestModal').style.display = 'none';
-            await loadTransactions();
-        } catch (err) { alert('❌ ' + err.message); }
-    };
+    return data;
 }
 
-init();
+// ===== RELEASE EQUIPMENT =====
+export async function releaseEquipment(transactionId, userRole, userId) {
+    // Check transaction status
+    const { data: tx } = await supabase
+        .from('borrowing_transactions')
+        .select('status, equipment_id')
+        .eq('id', transactionId)
+        .single();
+
+    if (!tx) throw new Error('Transaction not found');
+
+    // BR-A4-04: Only Approved can be released
+    if (tx.status !== 'Approved') {
+        throw new Error('BR-A4-04: Only Approved requests can be released');
+    }
+
+    // Update transaction
+    await supabase.from('borrowing_transactions')
+        .update({
+            status: 'Released',
+            released_by: userId,
+            released_at: new Date().toISOString()
+        })
+        .eq('id', transactionId);
+
+    // BR-A4-05: Equipment becomes Borrowed
+    await supabase.from('equipment')
+        .update({ status: 'Borrowed' })
+        .eq('id', tx.equipment_id);
+
+    await logAudit('RELEASED', 'Borrowing', transactionId,
+        `Equipment released`);
+}
+
+// ===== PROCESS RETURN =====
+export async function processReturn(transactionId, userId, isDamaged = false) {
+    const { data: tx } = await supabase
+        .from('borrowing_transactions')
+        .select('status, equipment_id')
+        .eq('id', transactionId)
+        .single();
+
+    if (!tx) throw new Error('Transaction not found');
+
+    // BR-A4-08: Cannot return twice
+    if (tx.status === 'Returned' || tx.status === 'Closed') {
+        throw new Error('BR-A4-08: Already returned');
+    }
+
+    // Update transaction
+    await supabase.from('borrowing_transactions')
+        .update({
+            status: 'Returned',
+            returned_to: userId,
+            returned_at: new Date().toISOString(),
+            actual_return_date: new Date().toISOString().split('T')[0]
+        })
+        .eq('id', transactionId);
+
+    // BR-A4-06: Equipment becomes Available unless damaged
+    await supabase.from('equipment')
+        .update({ status: isDamaged ? 'Damaged' : 'Available' })
+        .eq('id', tx.equipment_id);
+
+    await logAudit('RETURNED', 'Borrowing', transactionId,
+        isDamaged ? 'Returned (damaged)' : 'Returned');
+}
+
+// ===== CHECK OVERDUE =====
+export async function checkOverdue() {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+
+        const { data: overdue } = await supabase
+            .from('borrowing_transactions')
+            .select('id')
+            .eq('status', 'Released')
+            .lt('expected_return_date', today);
+
+        if (overdue && overdue.length > 0) {
+            await supabase.from('borrowing_transactions')
+                .update({ status: 'Overdue' })
+                .in('id', overdue.map(o => o.id));
+
+            await logAudit('OVERDUE_CHECK', 'Borrowing', null,
+                `${overdue.length} transaction(s) marked overdue`);
+        }
+    } catch (err) {
+        console.warn('Overdue check failed:', err);
+    }
+}
