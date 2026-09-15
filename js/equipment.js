@@ -18,12 +18,15 @@ async function init() {
     const rb = document.getElementById('roleBadge');
     rb.textContent = currentUser.role.toUpperCase();
     rb.className = `badge role-${currentUser.role}`;
+    const addBtn = document.getElementById('addEquipmentBtn');
+    if (addBtn && !['admin', 'staff'].includes(currentUser.role)) {
+        addBtn.style.display = 'none';
+    }
 
     renderNav();
     await loadEquipment();
     setupEvents();
 }
-
 function renderNav() {
     const nav = document.getElementById('mainNav');
     const links = NAVIGATION[currentUser.role] || [];
